@@ -15,10 +15,13 @@ abstract class Converter
 {
     const DATETIME = 'datetime';
 
+    const DATETIME_IMMUTABLE = 'datetime_immutable';
+
     protected $propertyName;
 
     private static $converterMap = [
         self::DATETIME => DateTimeConverter::class,
+        self::DATETIME_IMMUTABLE => DateTimeImmutableConverter::class,
     ];
 
     private static $converterObjects = [];
@@ -26,7 +29,7 @@ abstract class Converter
     /**
      * @param string $propertyName
      */
-    final private function __construct($propertyName)
+    private function __construct($propertyName)
     {
         $this->propertyName = $propertyName;
     }
@@ -39,14 +42,15 @@ abstract class Converter
 
     /**
      * @param string $name
+     * @param mixed  $propertyName
      *
      * @return Converter
      */
     public static function getConverter($name, $propertyName)
     {
         $objectK = $name.$propertyName;
-        if ( ! isset(self::$converterObjects[$objectK])) {
-            if ( ! isset(self::$converterMap[$name])) {
+        if (!isset(self::$converterObjects[$objectK])) {
+            if (!isset(self::$converterMap[$name])) {
                 throw new \InvalidArgumentException(sprintf('No converter named "%s" found', $name));
             }
 
@@ -62,7 +66,7 @@ abstract class Converter
      */
     public static function addConverter($name, $class)
     {
-        if ( isset(self::$converterMap[$name])) {
+        if (isset(self::$converterMap[$name])) {
             throw new \InvalidArgumentException(sprintf('Converter with name "%s" already exist', $name));
         }
 
@@ -78,6 +82,4 @@ abstract class Converter
     {
         return isset(self::$converterMap[$name]);
     }
-
-
 }
