@@ -185,7 +185,7 @@ abstract class GraphEntityMetadata implements ClassMetadata
             $v = $entityPropertyMetadata->getValue($object);
             if (is_object($v)) {
                 switch (get_class($v)) {
-                    case \DateTime::class:
+                    case \DateTimeInterface::class:
                         $v = $v->getTimestamp();
                         break;
                 }
