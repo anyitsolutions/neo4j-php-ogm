@@ -114,6 +114,53 @@ class Query
     }
 
     /**
+     * Gets the single scalar result of the query.
+     *
+     * @return mixed The scalar result.
+     * @throws \Exception
+     */
+    public function getSingleScalarResult()
+    {
+        $result = $this->execute();
+
+        if (!$result) {
+            throw new NoResultException;
+        }
+
+        if (!is_array($result)) {
+            return $result;
+        }
+
+        if (count($result) > 1) {
+            throw new NonUniqueResultException;
+        }
+        return $this->hydrateData(array_shift($result));
+    }
+
+    /**
+     * @param array $data
+     * @return mixed
+     */
+    protected function hydrateData(array $data)
+    {
+        $numRows = count($data);
+
+        if ($numRows === 0) {
+            throw new NoResultException;
+        }
+
+        if ($numRows > 1) {
+            throw new NonUniqueResultException('The query returned multiple rows.');
+        }
+
+        if (is_array($data[key($data)])) {
+            throw new NonUniqueResultException('The query returned a row containing multiple columns.');
+        }
+
+        return $data[key($data)];
+    }
+
+    /**
      * @return array
      */
     private function formatParameters()
